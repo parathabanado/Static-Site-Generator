@@ -3,7 +3,7 @@ from htmlnode import HTMLNode, LeafNode, ParentNode
 from directory_copy import static_to_public
 import os
 import shutil
-def generate_page(from_path,template_path,dest_path):
+def generate_page(from_path,template_path,dest_path,basepath):
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
     from_contents=""
     with open(from_path, 'r') as from_object:
@@ -17,6 +17,8 @@ def generate_page(from_path,template_path,dest_path):
     print(html)
     template_contents=template_contents.replace("{{ Title }}",title)
     template_contents=template_contents.replace("{{ Content }}",html)
+    template_contents=template_contents.replace('href="/',f'href="{basepath}')
+    template_contents=template_contents.replace('src="/',f'src="{basepath}')
     try:
         dest_dir_path = os.path.dirname(dest_path)
         if dest_dir_path != "":
@@ -28,7 +30,7 @@ def generate_page(from_path,template_path,dest_path):
         print("Error writing :",e)
 
 
-def recur_generate(source,template,dest):
+def recur_generate(source,template,dest,basepath):
     if not os.path.exists(dest):
         print("Hi")
         os.mkdir(dest)
@@ -39,18 +41,18 @@ def recur_generate(source,template,dest):
                 root, ext = os.path.splitext(os.path.join(source,item))
                 if ext==".md":
                     dest_file=item.replace(".md",".html")
-                    generate_page(os.path.join(source,item),template,os.path.join(dest,dest_file))
+                    generate_page(os.path.join(source,item),template,os.path.join(dest,dest_file),basepath)
             else:
-                recur_generate(os.path.join(source,item),template,os.path.join(dest,item))
+                recur_generate(os.path.join(source,item),template,os.path.join(dest,item),basepath)
         return
     else:
         raise Exception("Source Destination invalid")
 
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path,basepath):
     if os.path.exists(dest_dir_path):
         try:
             shutil.rmtree(dest_dir_path)
         except OSError as e:
             print(f"Error: could not delete {dest_dir_path} : {e}") 
     static_to_public()
-    recur_generate(dir_path_content,template_path,dest_dir_path)
+    recur_generate(dir_path_content,template_path,dest_dir_path,basepath)

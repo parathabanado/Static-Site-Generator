@@ -15,7 +15,7 @@ def recur_copy(source,dest):
         raise Error("Source Destination invalid")
 def static_to_public():
     source_path="/home/borderline_corporate_slave/workspace/github.com/parathabanado/Static-Site-Generator/static"
-    destination_path="/home/borderline_corporate_slave/workspace/github.com/parathabanado/Static-Site-Generator/public"
+    destination_path="/home/borderline_corporate_slave/workspace/github.com/parathabanado/Static-Site-Generator/docs"
     if os.path.exists(destination_path):
         try:
             shutil.rmtree(destination_path)
